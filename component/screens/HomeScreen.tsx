@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -8,18 +8,18 @@ import {
   Dimensions,
   Animated,
   Button,
-} from 'react-native';
-import ApolloClient from 'apollo-boost';
-import {gql} from 'apollo-boost';
-import LinearGradient from 'react-native-linear-gradient';
+} from "react-native";
+import ApolloClient from "apollo-boost";
+import { gql } from "apollo-boost";
+import LinearGradient from "react-native-linear-gradient";
 
 //Dimentions
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
 const HomeScreen = () => {
   //Animations
-  const leftToRight = useState(new Animated.ValueXY({x: -500, y: 0}))[0];
+  const leftToRight = useState(new Animated.ValueXY({ x: -500, y: 0 }))[0];
   const zoomInOut = useState(new Animated.Value(0.75))[0];
 
   //State
@@ -27,7 +27,7 @@ const HomeScreen = () => {
 
   const callAnimations = () => {
     Animated.timing(leftToRight, {
-      toValue: {x: 0, y: 0},
+      toValue: { x: 0, y: 0 },
       duration: 5000,
       useNativeDriver: false,
     }).start();
@@ -51,7 +51,7 @@ const HomeScreen = () => {
 
   const getFilmData = () => {
     const client = new ApolloClient({
-      uri: 'https://swapi-graphql.netlify.app/.netlify/functions/index',
+      uri: "https://swapi-graphql.netlify.app/.netlify/functions/index",
     });
     client
       .query({
@@ -70,51 +70,32 @@ const HomeScreen = () => {
           }
         `,
       })
-      .then(result => {
+      .then((result) => {
         setFilmList(result.data.allFilms.films);
-        console.log(JSON.stringify(result, null, '  '));
+        console.log(JSON.stringify(result, null, "  "));
+        // after getting data we are starting Animations
         callAnimations();
       });
   };
 
-  const renderItem = ({item, index}) => {
+  const renderItem = ({ item, index }) => {
     return (
       <Animated.View style={leftToRight.getLayout()}>
-        <View
-          style={{
-            width: '90%',
-            marginTop: 8,
-            flex: 1,
-            flexDirection: 'row',
-            borderWidth: 1,
-            borderRadius: 16,
-            justifyContent: 'center',
-          }}>
+        <View style={styles.mainBlockView}>
           {/* Image View */}
-          <View
-            style={{
-              flex: 0.2,
-              borderWidth: 1,
-              borderRadius: 16,
-            }}>
-            <View style={{flex: 0.9}}>
+          <View style={styles.imageView}>
+            <View style={{ flex: 0.9 }}>
               <Animated.Image
-                source={{uri: 'https://reactnative.dev/img/tiny_logo.png'}}
+                source={{ uri: "https://reactnative.dev/img/tiny_logo.png" }}
                 style={{
                   height: windowHeight / 4,
                   padding: 4,
-                  transform: [{scale: zoomInOut}],
+                  transform: [{ scale: zoomInOut }],
                 }}
                 resizeMode="contain"
               />
             </View>
-            <View
-              style={{
-                justifyContent: 'space-around',
-                flex: 0.1,
-                flexDirection: 'row',
-                padding: 4,
-              }}>
+            <View style={styles.buttonView}>
               <Button
                 title="+"
                 onPress={() => {
@@ -130,48 +111,52 @@ const HomeScreen = () => {
             </View>
           </View>
           {/* Info View */}
-          <View
-            style={{flex: 0.8, padding: 8, justifyContent: 'space-between'}}>
-            <Text style={{fontSize: 18, fontWeight: 'bold'}}>
-              {'Title : '}
+          <View style={styles.mainInfoView}>
+            <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+              {"Title : "}
               <Text
                 style={{
                   fontSize: 14,
-                }}>{`${item.title}`}</Text>
+                }}
+              >{`${item.title}`}</Text>
             </Text>
-            <Text style={{fontSize: 18, fontWeight: 'bold'}}>
-              {'Episode : '}
+            <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+              {"Episode : "}
               <Text
                 style={{
                   fontSize: 14,
-                }}>{`${item.episodeID}`}</Text>
-            </Text>
-
-            <Text style={{fontSize: 18, fontWeight: 'bold'}}>
-              {'Release Date : '}
-              <Text
-                style={{
-                  fontSize: 14,
-                }}>{`${item.releaseDate}`}</Text>
+                }}
+              >{`${item.episodeID}`}</Text>
             </Text>
 
-            <Text style={{fontSize: 18, fontWeight: 'bold'}}>
-              {'Director : '}
+            <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+              {"Release Date : "}
               <Text
                 style={{
                   fontSize: 14,
-                }}>{`${item.director}`}</Text>
+                }}
+              >{`${item.releaseDate}`}</Text>
             </Text>
-            <Text style={{fontSize: 18, fontWeight: 'bold'}}>
-              {'Producers : '}{' '}
+
+            <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+              {"Director : "}
+              <Text
+                style={{
+                  fontSize: 14,
+                }}
+              >{`${item.director}`}</Text>
+            </Text>
+            <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+              {"Producers : "}{" "}
             </Text>
             {item.producers &&
-              item.producers.map(prodName => {
+              item.producers.map((prodName) => {
                 return (
                   <Text
                     style={{
                       fontSize: 14,
-                    }}>{`${prodName}`}</Text>
+                    }}
+                  >{`${prodName}`}</Text>
                 );
               })}
           </View>
@@ -180,17 +165,20 @@ const HomeScreen = () => {
     );
   };
   useEffect(() => {
+    // get inital Data
     getFilmData();
   }, []);
   return (
     <View style={styles.main}>
+      <Text style={styles.mainText}>STAR WARS</Text>
       <LinearGradient
-        start={{x: 0, y: 0}}
-        end={{x: 1, y: 0}}
-        colors={['#4c669f', '#3b5998', '#FFFFFF']}
-        style={styles.linearGradient}>
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        colors={["#4c669f", "#3b5998", "#FFFFFF"]}
+        style={styles.linearGradient}
+      >
         <FlatList
-          contentContainerStyle={{paddingTop: 40, paddingBottom: 40}}
+          contentContainerStyle={{ paddingTop: 40, paddingBottom: 40 }}
           data={filmList}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}
@@ -205,6 +193,7 @@ const styles = StyleSheet.create({
   main: {
     flex: 1,
     margin: 8,
+    justifyContent: "center",
   },
   linearGradient: {
     flex: 1,
@@ -212,6 +201,34 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     borderRadius: 5,
   },
+  mainText: {
+    fontSize: 24,
+    padding: 4,
+    alignSelf: "center",
+    fontWeight: "bold",
+    color: "black",
+  },
+  mainBlockView: {
+    width: "90%",
+    marginTop: 8,
+    flex: 1,
+    flexDirection: "row",
+    borderWidth: 1,
+    borderRadius: 16,
+    justifyContent: "center",
+  },
+  imageView: {
+    flex: 0.2,
+    borderWidth: 1,
+    borderRadius: 16,
+  },
+  buttonView: {
+    justifyContent: "space-around",
+    flex: 0.1,
+    flexDirection: "row",
+    padding: 4,
+  },
+  mainInfoView: { flex: 0.8, padding: 8, justifyContent: "space-between" },
 });
 
 export default HomeScreen;
